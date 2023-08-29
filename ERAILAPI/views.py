@@ -1,11 +1,12 @@
 import pandas as pd
 from datetime import datetime,timedelta
-
+import numpy as np
 import json
 from django.http import JsonResponse
 from .serializers import TraiSerializers
-
-
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
 
 minutes = 4 #min
 between_minutes = 30 #min
@@ -53,6 +54,45 @@ def check_destination(Train_nos,Destination,current_time):
    
     return Is_avaibale
 
+def Ml_Model(time):
+    UD_Data = pd.read_csv('erail.csv')
+
+    UD_Data['Arrival Time'] = pd.to_datetime(UD_Data['Arrival Time'], format='%I:%M:%S %p')
+
+    UD_Data['Hour'] = UD_Data['Arrival Time'].dt.hour
+    UD_Data['Minute'] = UD_Data['Arrival Time'].dt.minute
+
+    # Splitting into X and y
+    X = UD_Data[['Hour', 'Minute']].values
+    y = UD_Data['Train Up or Down'].values
+
+    X_df = pd.DataFrame(X, columns=['Hour', 'Minute'])
+    y_df = pd.DataFrame(y, columns=['Train Up or Down'])
+
+    X_train, X_test, y_train, y_test = train_test_split(X_df, y_df, test_size=0.2)
+
+    model = DecisionTreeClassifier()
+    model.fit(X_train, y_train)
+    model.predict(X_test)
+
+    predictions = model.predict(X_test)
+    accuracy = accuracy_score(y_test, predictions)
+    print("Accuracy:", accuracy)
+
+   # input_time_str = time.time() # Example input time
+    input_time = pd.to_datetime(time)
+    input_hour = input_time.hour
+    input_minute = input_time.minute
+
+    input_data = pd.DataFrame([[input_hour, input_minute]], columns=['Hour', 'Minute'])
+    predicted_direction = model.predict(input_data)
+
+    if predicted_direction == 1:
+        return "Down"
+    else:
+        return "Up"    
+
+
 def test_api (request):
     Stations_parm = request.GET.get('stations',None)   
     Destination_parm = request.GET.get('destination')
@@ -60,11 +100,13 @@ def test_api (request):
 
     current_time = datetime.strptime(Time_parm, '%H:%M:%S')
     after_30_min = current_time + timedelta(minutes=30) 
-    
+    print(current_time)
+    print(after_30_min)
     Stations_parm = json.loads(Stations_parm)    
 
     arrival, destination = read_Stations(Stations_parm,Destination_parm,current_time,after_30_min)
-    print(destination)
+    UD = Ml_Model(after_30_min)
+    #print(UD)
   
     if destination:
       destination= destination           
@@ -78,7 +120,8 @@ def test_api (request):
     
     response_data = {
         'arrival_data': arrival,
-        'destination_data': destination
+        'destination_data': destination,
+        'ml_data':UD
     }   
 
     return JsonResponse(response_data, safe=False)
