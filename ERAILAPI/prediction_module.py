@@ -145,7 +145,8 @@ def make_predictions(train_num):
         return []
 
 
-res_delay, res_s3 = make_predictions(1006)
+def predictionIndex():
+    res_delay, res_s3 = make_predictions(1006)
 
-print(res_delay)
-print(res_s3)
+    print(res_delay)
+    print(res_s3)
