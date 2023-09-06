@@ -16,7 +16,7 @@ def make_json_array(keys, values):
     # Convert the dictionary to a JSON array
 
     delay_prediction_json_array = json.dumps([data])
-    s3_data = get_images()
+    s3_data = get_images(keys)
     # Print the JSON array
     # print(f"json_array:{json_array}")
     return delay_prediction_json_array, s3_data
@@ -79,7 +79,7 @@ def make_predictions(train_num):
                                                  'created_at'])
 
         last_station = str(delay_df['station_name'].tolist()[-1]).lower().strip().replace(" ", "_")
-        print(f"last_station:{last_station}")
+        # print(f"last_station:{last_station}")
         #
         # print(f'delay_df:{delay_df}')
         viewpoint_list = ["pattipola", "idalgashinna", "ohiya", "ella", "haputhale", "demodara", "bandarawela",
@@ -111,13 +111,13 @@ def make_predictions(train_num):
 
             # Append the predicted delay to the list
             predicted_delays.append(predicted_delay)
-            print(f"predicted_delays:{predicted_delays}")
+            # print(f"predicted_delays:{predicted_delays}")
             # Remove the first value from the list to maintain a window of 5 delay times
             last_5_delays.pop(0)
 
             # Append the new predicted value at the end
             last_5_delays.append(predicted_delay)
-            print(f"last_5_delays:{last_5_delays}")
+            # print(f"last_5_delays:{last_5_delays}")
 
         count = 0
         next_stations = []
