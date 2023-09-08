@@ -1,4 +1,4 @@
-from database import MySQLConnector
+from ERAILAPI.database import MySQLConnector
 import pandas as pd
 import numpy as np
 import pickle
@@ -7,7 +7,7 @@ import os
 import json
 from django.http import JsonResponse
 from dotenv import load_dotenv
-from viewpoints import get_images
+from ERAILAPI.viewpoints import get_images
 
 load_dotenv()
 
@@ -17,10 +17,12 @@ def make_json_array(keys, values):
     data = dict(zip(keys, values))
     # Convert the dictionary to a JSON array
 
-    delay_prediction_json_array = json.dumps([data])
+    # delay_prediction_json_array = json.dumps([data])
+    delay_prediction_json_array = ([data])
     s3_data = get_images(keys)
     # Print the JSON array
     # print(f"json_array:{json_array}")
+    
     return delay_prediction_json_array, s3_data
 
 
@@ -147,11 +149,26 @@ def make_predictions(train_num):
 
 
 def predictionIndex(request):
-    print(request)
+    train_no_param = request.GET.get('train_no')
+    destination_parm = request.GET.get('destination')
+    timedelay_reasone_parm = request.GET.get('timedelay_reasone')
+    delay_time_parm = request.GET.get('delay_time')
+    print(train_no_param)
+    print(destination_parm)
+    print(timedelay_reasone_parm)
+    print(delay_time_parm)
+    
     res_delay, res_s3 = make_predictions(1006)
-
     print(res_delay)
     print(res_s3)
 
 
-predictionIndex()
+    
+    response_data = {
+        'res_delay': res_delay,
+        'res_s3': res_s3
+    } 
+   
+    return JsonResponse(response_data, safe=False)
+ 
+
