@@ -14,8 +14,10 @@ bucket_name = os.environ.get('S3_BUCKET_NAME')
 s3 = boto3.client('s3', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
 
 
-def get_images():
+def get_images(location_list):
     try:
+        # print(f"location_list:{location_list}")
+        # print(f"location_list:{type(location_list)}")
         # List all objects (images) in the S3 bucket
         response = s3.list_objects(Bucket=bucket_name,)
 
@@ -33,11 +35,14 @@ def get_images():
             )
             image_urls.append(url)
             _key = str(obj['Key']).split('/')[0].lower().strip().replace(" ", "_")
-            if _key not in key_list:
-                img_dict[f"{_key}"] = []
-                img_dict.get(_key).append(url)
-            else:
-                img_dict.get(_key).append(url)
+            # print(f"_key:{_key}")
+            if _key in location_list:
+                # print(f"_key:{_key}")
+                if _key not in key_list:
+                    img_dict[f"{_key}"] = []
+                    img_dict.get(_key).append(url)
+                else:
+                    img_dict.get(_key).append(url)
 
         # print(f"img_dict:{img_dict}")
         return img_dict
@@ -47,4 +52,4 @@ def get_images():
         return []
 
 
-get_images()
+# get_images([])
