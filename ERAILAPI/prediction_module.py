@@ -1,4 +1,4 @@
-from database import MySQLConnector
+from ERAILAPI.database import MySQLConnector
 import pandas as pd
 import numpy as np
 import pickle
@@ -7,7 +7,7 @@ import os
 import json
 from django.http import JsonResponse
 from dotenv import load_dotenv
-from viewpoints import get_images
+from ERAILAPI.viewpoints import get_images
 
 load_dotenv()
 
@@ -154,4 +154,4 @@ def predictionIndex(request):
     print(res_s3)
 
 
-predictionIndex()
+
