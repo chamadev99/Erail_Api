@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from  ERAILAPI import views
-from  ERAILAPI import prediction_module
+from  ERAILAPI import prediction_module, delay_form
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',views.test_api,name="test_api"),
-    path('api/delay_prediction',prediction_module.predictionIndex,name="delay_api")
+    path('api/delay_prediction',prediction_module.predictionIndex,name="delay_api"),
+    path('api/delay_form', delay_form.insert_delay, name="delay_insert_api")
 ]
