@@ -7,7 +7,8 @@ import os
 import json
 from django.http import JsonResponse
 from dotenv import load_dotenv
-from ERAILAPI.viewpoints import get_images
+# from ERAILAPI.viewpoints import get_images
+from ERAILAPI.s3_helper import get_media_files as get_images
 
 load_dotenv()
 
